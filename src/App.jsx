@@ -2,6 +2,7 @@
 import HeaderClase from './components/HeaderClase';
 import ObjetivosCard from './components/ObjetivosCard';
 import ActividadItem from './components/ActividadItem';
+import { useState } from 'react';
 
 export default function App() {
   // Datos simulados de un Plan de Clase Digital Real
@@ -30,41 +31,49 @@ export default function App() {
     ]
   };
 
-  const containerStyle = {
-    maxWidth: '800px',
-    margin: '40px auto',
-    padding: '0 20px',
-    fontFamily: '"Segoe UI", Roboto, Helvetica, Arial, sans-serif'
-  };
+  const [actividadesCompletadas, setActividadesCompletadas] = useState(0);
+  const progreso = Math.round((actividadesCompletadas / datosClase.actividades.length) * 100);
 
   return (
-    <div style={containerStyle}>
-      {/* Componente Header */}
+    <main className="app-shell">
       <HeaderClase 
         tituloTema={datosClase.tituloTema}
         nombreDocente={datosClase.nombreDocente}
         horario={datosClase.horario}
       />
 
-      {/* Componente Metas / Objetivos */}
       <ObjetivosCard 
         competencia={datosClase.competencia}
         indicadorLogro={datosClase.indicadorLogro}
       />
 
-      {/* Listado Dinámico de Actividades */}
-      <div style={{ marginTop: '30px' }}>
-        <h2 style={{ color: '#0f172a', fontSize: '1.4rem', marginBottom: '16px' }}>
-          Cronograma de Actividades
-        </h2>
+      <section className="activities-section" aria-labelledby="activities-title">
+        <div className="section-heading">
+          <div>
+            <p className="eyebrow">Ruta de aprendizaje</p>
+            <h2 id="activities-title">Cronograma de actividades</h2>
+          </div>
+          <div className="progress-summary">
+            <strong>{progreso}%</strong>
+            <span>completado</span>
+          </div>
+        </div>
+        <div className="progress-track" aria-label={`${progreso}% de actividades completadas`}>
+          <span style={{ width: `${progreso}%` }} />
+        </div>
         {datosClase.actividades.map((actividad) => (
           <ActividadItem 
             key={actividad.id}
             nombreActividad={actividad.nombre}
             descripcion={actividad.descripcion}
+            onEstadoChange={(completada) => setActividadesCompletadas((actual) => actual + (completada ? 1 : -1))}
           />
         ))}
-      </div>
-    </div>
+      </section>
+      <footer className="app-footer">
+        <span className="footer-mark">✦</span>
+        Aprende haciendo, construye con intención.
+      </footer>
+    </main>
   );
 }
